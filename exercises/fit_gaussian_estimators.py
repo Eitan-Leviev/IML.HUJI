@@ -4,7 +4,6 @@ import plotly.graph_objects as go
 import plotly.io as pio
 pio.templates.default = "simple_white"
 
-
 def test_univariate_gaussian():
     # Question 1 - Draw samples and print fitted model
     raise NotImplementedError()
