@@ -10,10 +10,9 @@ mu = 10
 sigma = 1
 m = 1000
 
-#
-uvg = UnivariateGaussian()
-
 def test_univariate_gaussian():
+
+    uvg = UnivariateGaussian()
 
     # Question 1 - Draw samples and print fitted model
 
@@ -24,21 +23,27 @@ def test_univariate_gaussian():
     # Question 2 - Empirically showing sample mean is consistent
 
     ms = np.linspace(10, 1000, 100).astype(np.int) # sample size intervals
-    expectation_error_list = []
+    expectation_errors = []
 
-    for x in ms:
-        X = np.random.normal(mu, sigma, size=x)  # draw x samples
-        uvg.fit(X)  # fit
-        expectation_error_list.append(abs(uvg.mu_ - mu)) # calculate the expectation error of the estimator upon x samples
+    for i in ms:
+        uvg.fit(X[:i])  # fit
+        expectation_errors.append(abs(uvg.mu_ - mu)) # calculate the expectation error of the estimator upon i samples
 
     #plot
-    go.Figure([go.Scatter(x=ms, y=expectation_error_list, mode='lines', name=r'$\widehat\mu$')],
+    go.Figure([go.Scatter(x=ms, y=expectation_errors, mode='lines')],
               layout=go.Layout(title=r"$\text{Absolute Distance Between Estimated And Real Expectation As Function Of Number Of Samples}$",
-                               xaxis_title="$x\\text{ - number of samples}$",
+                               xaxis_title="number of samples",
                                yaxis_title="absolute distance between estimated and real expectation",
-                               height=300)).show()
+                               height=600)).show()
 
     # Question 3 - Plotting Empirical PDF of fitted model
+
+    go.Figure([go.Scatter(x=X, y=uvg.pdf(X), mode='markers')],
+              layout=go.Layout(
+                  title=r"$\text{PDF Of The Samples Based On Q1's Model - As Function Of Sample Values}$",
+                  xaxis_title="sample values",
+                  yaxis_title="the PDF of given sample",
+                  height=600)).show()
 
 
 def test_multivariate_gaussian():
