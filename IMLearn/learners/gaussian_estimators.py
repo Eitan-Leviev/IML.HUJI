@@ -207,16 +207,24 @@ class MultivariateGaussian:
 
         Parameters
         ----------
-        mu : float
+        mu : ndarray of shape (n_features,)
             Expectation of Gaussian
-        cov : float
+        cov : ndarray of shape (n_features, n_features)
             covariance matrix of Gaussian
-        X : ndarray of shape (n_samples, )
+        X : ndarray of shape (n_samples, n_features)
             Samples to calculate log-likelihood with
 
         Returns
         -------
         log_likelihood: float
-            log-likelihood calculated
+            log-likelihood calculated over all input data and under given parameters of Gaussian
         """
-        raise NotImplementedError()
+
+        m, pi, X_rows, X_cols = len(X), np.pi, X.shape[0], X.shape[1]
+        log = np.log
+
+        res = -0.5 * X_rows * X_cols * log(2 * pi) \
+              - 0.5 * X_rows * slogdet(cov)[1] \
+              - 0.5 * np.sum( (X - mu) @ inv(cov) * (X - mu) )
+
+        return res
