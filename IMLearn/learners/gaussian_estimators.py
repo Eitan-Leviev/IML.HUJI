@@ -105,7 +105,13 @@ class UnivariateGaussian:
         log_likelihood: float
             log-likelihood calculated
         """
-        raise NotImplementedError()
+
+        m, pi = len(X), np.pi
+        log, sum, sqrt = np.log, np.sum, np.sqrt
+
+        res = -m * log(sigma * sqrt(2 * pi)) -0.5 * sum( ((X - mu) / sigma) ** 2 )
+
+        return res
 
 
 class MultivariateGaussian:
@@ -122,12 +128,12 @@ class MultivariateGaussian:
             Initialized as false indicating current estimator instance has not been fitted.
             To be set as True in `MultivariateGaussian.fit` function.
 
-        mu_: float
-            Estimated expectation initialized as None. To be set in `MultivariateGaussian.ft`
+        mu_: ndarray of shape (n_features,)
+            Estimated expectation initialized as None. To be set in `MultivariateGaussian.fit`
             function.
 
-        cov_: float
-            Estimated covariance initialized as None. To be set in `MultivariateGaussian.ft`
+        cov_: ndarray of shape (n_features, n_features)
+            Estimated covariance initialized as None. To be set in `MultivariateGaussian.fit`
             function.
         """
         self.mu_, self.cov_ = None, None
@@ -139,19 +145,21 @@ class MultivariateGaussian:
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, )
+        X: ndarray of shape (n_samples, n_features)
             Training data
 
         Returns
         -------
-        self : returns an instance of self.
+        self : returns an instance of self
 
         Notes
         -----
         Sets `self.mu_`, `self.cov_` attributes according to calculated estimation.
         Then sets `self.fitted_` attribute to `True`
         """
-        raise NotImplementedError()
+
+        self.mu_ = np.mean(X, axis=0) # axis=0 indicates to take means over columns, i.e. 4 means, a mean for each feature
+        self.cov_ = np.cov(X, rowvar=False, ddof=1)
 
         self.fitted_ = True
         return self
@@ -162,7 +170,7 @@ class MultivariateGaussian:
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, )
+        X: ndarray of shape (n_samples, n_features)
             Samples to calculate PDF for
 
         Returns
@@ -176,7 +184,21 @@ class MultivariateGaussian:
         """
         if not self.fitted_:
             raise ValueError("Estimator must first be fitted before calling `pdf` function")
-        raise NotImplementedError()
+
+        mu = self.mu_
+        cov = self.cov_
+
+        def gaussian_pdf_func(x: np.ndarray) -> float:
+            """
+            x is a single sample of shape 1xd
+            """
+            gaussian_const = 1 / np.sqrt( ((2 * np.pi) ** len(mu)) * det(cov) )
+            gaussian_exp_pow = -0.5 * (x - mu).T @ inv(cov) @ (x - mu)
+            return gaussian_const * np.exp(gaussian_exp_pow)
+
+        pdf = np.apply_along_axis(gaussian_pdf_func, axis=1, arr=X)
+
+        return pdf
 
     @staticmethod
     def log_likelihood(mu: np.ndarray, cov: np.ndarray, X: np.ndarray) -> float:
