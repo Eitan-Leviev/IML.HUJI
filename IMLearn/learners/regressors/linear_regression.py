@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import NoReturn
 from ...base import BaseEstimator
 import numpy as np
-from numpy.linalg import pinv
+from numpy.linalg import pinv, inv
 
 
 class LinearRegression(BaseEstimator):
@@ -49,7 +49,13 @@ class LinearRegression(BaseEstimator):
         -----
         Fits model with or without an intercept depending on value of `self.include_intercept_`
         """
-        raise NotImplementedError()
+
+        self.coefs_ = pinv(X) @ y
+        # self.coefs_ = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
+
+        #TODO should divide to singular / non cases ?
+        # TODO what about include_intercept_ ?
+
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -65,7 +71,7 @@ class LinearRegression(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        raise NotImplementedError()
+        return X @ self.coefs_
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -84,4 +90,10 @@ class LinearRegression(BaseEstimator):
         loss : float
             Performance under MSE loss function
         """
-        raise NotImplementedError()
+
+        # fit
+        self._fit(X, y)
+        # predict
+        y_predict = self._predict(X)
+        # calculate MSE
+        return ((y - y_predict) ** 2).mean()
