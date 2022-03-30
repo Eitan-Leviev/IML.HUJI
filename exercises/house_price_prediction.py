@@ -1,6 +1,10 @@
 from IMLearn.utils import split_train_test
 from IMLearn.learners.regressors import LinearRegression
 
+import sys
+sys.path.append("../")
+from utils import *
+
 from typing import NoReturn
 import numpy as np
 import pandas as pd
@@ -23,7 +27,9 @@ def load_data(filename: str):
     Design matrix and response vector (prices) - either as a single
     DataFrame or a Tuple[DataFrame, Series]
     """
-    raise NotImplementedError()
+    # print(filename)
+    house_data = pd.read_csv(filename)
+    print(house_data.head())
 
 
 def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") -> NoReturn:
@@ -49,13 +55,17 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
 if __name__ == '__main__':
     np.random.seed(0)
     # Question 1 - Load and preprocessing of housing prices dataset
-    raise NotImplementedError()
+    load_data("../datasets/house_prices.csv")
+    # load_data("house_prices.csv")
+    # load_data("../house_prices.csv")
+    # load_data("house_prices")
+    # load_data("../IML.HUJI/datasets/house_prices.csv")
+    # load_data("C:\Users\eitan\IML.HUJI\datasets\house_prices.csv")
+    # load_data("C:/Users/eitan/IML.HUJI/datasets/house_prices.csv")
 
     # Question 2 - Feature evaluation with respect to response
-    raise NotImplementedError()
 
     # Question 3 - Split samples into training- and testing sets.
-    raise NotImplementedError()
 
     # Question 4 - Fit model over increasing percentages of the overall training data
     # For every percentage p in 10%, 11%, ..., 100%, repeat the following 10 times:
@@ -64,4 +74,3 @@ if __name__ == '__main__':
     #   3) Test fitted model over test set
     #   4) Store average and variance of loss over test set
     # Then plot average loss as function of training size with error ribbon of size (mean-2*std, mean+2*std)
-    raise NotImplementedError()
