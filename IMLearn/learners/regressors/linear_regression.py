@@ -53,7 +53,6 @@ class LinearRegression(BaseEstimator):
         self.coefs_ = pinv(X) @ y
         # self.coefs_ = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
 
-        #TODO should divide to singular / non cases ?
         # TODO what about include_intercept_ ?
 
 

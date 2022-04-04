@@ -93,6 +93,7 @@ def load_data(filename: str):
         house_data = pd.get_dummies(house_data, prefix='decade_renovated_', columns=['decade_renovated'], drop_first=True)
     else:
         house_data = pd.get_dummies(house_data, prefix='decade_renovated_', columns=['decade_renovated'])
+
     # decade_built:
     house_data["decade_built"] = (house_data["yr_built"] / 10).astype(int)
     house_data.drop(["yr_built"], axis=1, inplace=True)
@@ -132,21 +133,28 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
     output_path: str (default ".")
         Path to folder in which plots are saved
     """
-    raise NotImplementedError()
+
+    # TODO what about intercept ?
+
+    for feature in X:
+        corr = np.cov(X[feature], y)[0, 1] / (np.std(X[feature]) * np.std(y))
+        fig = px.scatter(pd.DataFrame({'x': X[feature], 'y': y}), x="x", y="y", trendline="ols",
+                         title=f"Correlation Between {feature} Values and Response <br>Pearson Correlation {corr}",
+                         labels={"x": f"{feature} Values", "y": "Response Values"})
+        fig.write_image(output_path + "/pearson.correlation.%s.png" % feature)
 
 
 if __name__ == '__main__':
+
     np.random.seed(0)
+
     # Question 1 - Load and preprocessing of housing prices dataset
-    load_data("../datasets/house_prices.csv")
-    # load_data("house_prices.csv")
-    # load_data("../house_prices.csv")
-    # load_data("house_prices")
-    # load_data("../IML.HUJI/datasets/house_prices.csv")
-    # load_data("C:\Users\eitan\IML.HUJI\datasets\house_prices.csv")
-    # load_data("C:/Users/eitan/IML.HUJI/datasets/house_prices.csv")
+
+    X, y = load_data("../datasets/house_prices.csv")
 
     # Question 2 - Feature evaluation with respect to response
+
+    feature_evaluation(X, y, "../exercises/house price corr")
 
     # Question 3 - Split samples into training- and testing sets.
 
