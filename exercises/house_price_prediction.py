@@ -34,7 +34,7 @@ def load_data(filename: str):
 
     # delete redundant features
 
-    house_data.drop(["id", "zipcode", "date"], axis=1, inplace=True)
+    house_data.drop(["id", "date", "zipcode"], axis=1, inplace=True)
 
     # value validation
 
@@ -170,3 +170,45 @@ if __name__ == '__main__':
     #   3) Test fitted model over test set
     #   4) Store average and variance of loss over test set
     # Then plot average loss as function of training size with error ribbon of size (mean-2*std, mean+2*std)
+
+    lr = LinearRegression(True)
+
+    features_num = len(train_y)
+    mse_list = []
+    var_loss = []
+
+    for p in range(10, 101):
+
+        p_loss_list = []
+
+        for _ in range(10):
+            # 1) Sample p% of the overall training data
+            rand_p_sample = train_X.sample(frac= p/100 )
+            p_response = train_y.reindex_like(rand_p_sample)
+            # 2) Fit linear model (including intercept) over sampled set
+            lr.fit(rand_p_sample, p_response)
+            # 3) Test fitted model over test set
+            p_loss_tmp = lr.loss(test_X, test_y)
+            p_loss_list.append(p_loss_tmp)
+
+        # 4) Store average and variance of loss over test set
+        if len(p_loss_list) == 0: print("division by zero"), exit(1) # no reason to happen but just to ensure.
+        p_loss_avrg = sum(p_loss_list) / len(p_loss_list)
+        p_loss_var = np.array(p_loss_list).var() # TODO to be tested
+        mse_list.append(p_loss_avrg)
+        var_loss.append(p_loss_var)
+
+    std_loss = np.sqrt(np.array(var_loss))
+    mse = np.array(mse_list)
+    ms = np.array(list(range(10, 101)))
+
+    fig = go.Figure([go.Scatter(x=ms, y=mse - 2 * std_loss, fill=None, mode="lines", line=dict(color="lightgrey"),
+                          showlegend=False),
+               go.Scatter(x=ms, y=mse + 2 * std_loss, fill='tonexty', mode="lines", line=dict(color="lightgrey"),
+                          showlegend=False),
+               go.Scatter(x=ms, y=mse, mode="markers+lines", marker=dict(color="black", size=1), showlegend=False)],
+              layout=go.Layout(title="Model Evaluation Over Increasing Portions Of Training Set",
+                                     xaxis=dict(title="Percentage of Training Set"),
+                                     yaxis=dict(title="MSE Over Test Set")))
+    fig.write_image("../exercises/mse.over.training.percentage.png")
+
