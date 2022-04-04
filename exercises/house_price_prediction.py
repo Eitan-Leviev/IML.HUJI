@@ -107,13 +107,14 @@ def load_data(filename: str):
 
     # TODO should add intercept ?
 
-    return processed_sample_matrix, response
-
     # is there nan : print(house_data[house_data["waterfront"] == np.nan].empty)
     # print( house_data.shape)
     # print( house_data.count() )
     # select columns :print(house_data[["condition", "view"]].describe())
     # corr : print( house_data.corr()['price'].sort_values() )
+
+    return processed_sample_matrix, response
+
 
 
 def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") -> NoReturn:
@@ -136,12 +137,14 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
 
     # TODO what about intercept ?
 
-    for feature in X:
-        corr = np.cov(X[feature], y)[0, 1] / (np.std(X[feature]) * np.std(y))
-        fig = px.scatter(pd.DataFrame({'x': X[feature], 'y': y}), x="x", y="y", trendline="ols",
-                         title=f"Correlation Between {feature} Values and Response <br>Pearson Correlation {corr}",
-                         labels={"x": f"{feature} Values", "y": "Response Values"})
-        fig.write_image(output_path + "/pearson.correlation.%s.png" % feature)
+    # TODO uncomment:
+
+    # for feature in X:
+    #     corr = np.cov(X[feature], y)[0, 1] / (np.std(X[feature]) * np.std(y))
+    #     fig = px.scatter(pd.DataFrame({'x': X[feature], 'y': y}), x="x", y="y", trendline="ols",
+    #                      title=f"Correlation Between {feature} Values and Response <br>Pearson Correlation {corr}",
+    #                      labels={"x": f"{feature} Values", "y": "Response Values"})
+    #     fig.write_image(output_path + "/pearson.correlation.%s.png" % feature)
 
 
 if __name__ == '__main__':
@@ -157,6 +160,8 @@ if __name__ == '__main__':
     feature_evaluation(X, y, "../exercises/house price corr")
 
     # Question 3 - Split samples into training- and testing sets.
+
+    train_X, train_y, test_X, test_y = split_train_test(X, y)
 
     # Question 4 - Fit model over increasing percentages of the overall training data
     # For every percentage p in 10%, 11%, ..., 100%, repeat the following 10 times:
