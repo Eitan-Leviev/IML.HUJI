@@ -148,9 +148,11 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
     #     fig.write_image(output_path + "/pearson.correlation.%s.png" % feature)
 
 def question_4():
+
     lr = LinearRegression(True)
 
-    features_num = len(train_y)
+    # features_num = len(train_y)
+
     mse_list = []
     var_loss = []
 
