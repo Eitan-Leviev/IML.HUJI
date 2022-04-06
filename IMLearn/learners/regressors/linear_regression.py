@@ -98,7 +98,7 @@ class LinearRegression(BaseEstimator):
             Performance under MSE loss function
         """
 
-        # TODO ensure that no need for new fir fit(X, y)
+        # TODO ensure that no need for new fit : fit(X, y)
         # predict
         y_predict = self._predict(X)
         # calculate MSE
