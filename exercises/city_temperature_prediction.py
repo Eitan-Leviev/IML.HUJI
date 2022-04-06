@@ -1,3 +1,5 @@
+import math
+
 import IMLearn.learners.regressors.linear_regression
 from IMLearn.learners.regressors import PolynomialFitting
 from IMLearn.utils import split_train_test
@@ -93,20 +95,32 @@ if __name__ == '__main__':
 
     # Question 4 - Fitting model for different values of `k`
 
-    pass # debugging
+    # Randomly split the dataset into a training set (75%) and test set (25%)
+    sample_matrix = israel_df.drop("Temp", axis=1, inplace=False)
+    response = israel_df.Temp
+    train_X, train_y, test_X, test_y = split_train_test(sample_matrix, response)
+    # For every value k ∈ [1,10], fit a polynomial model of degree k using the training set
+    loss_list = []
+    min_loss, min_ind = math.inf, 0
+    for k in range(1, 11):
+        poly_model = PolynomialFitting(k)
+        poly_model.fit(train_X["DayOfYear"], train_y)
+        # Record the loss of the model over the test set, rounded to 2 decimal places
+        loss = round(poly_model._loss(test_X["DayOfYear"], test_y), 2)
+        loss_list.append(loss)
+        if loss < min_loss: min_loss, min_ind = loss, k # ensure the simplest model (min k)
+        print(f"loss of {k}-polynomial model over the test set: {loss}")
+    print(f"the optimal degree is: {min_ind}, resulting in a loss of {min_loss}")
+    #plot
+    fig = go.Figure(data=[go.Bar(x=list(range(1, 11)),
+                                 y=loss_list)])
+    fig.update_layout(
+        title="loss of polynomial model as a func of polynomial degree k",
+        xaxis_title="k",
+        yaxis_title="loss of polynomial model")
+    fig.write_image("../exercises/loss.over.polynomial.degree.png")
 
     # Question 5 - Evaluating fitted model on different countries
 
+pass # debugging
 
-
-
-
-
-    # # return values
-    # processed_sample_matrix = data
-    # response = processed_sample_matrix.Temp
-    # processed_sample_matrix.drop("Temp", axis=1, inplace=True)
-    #
-    # # TODO should add intercept ?
-    #
-    # return processed_sample_matrix, response
