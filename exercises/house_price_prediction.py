@@ -54,7 +54,6 @@ def load_data(filename: str):
         # replace garbage values with the calculated mean
         house_data[feature] = np.where(house_data[feature] >= 0, house_data[feature], feature_mean)
 
-    # TODO are lat long helps ?
     # numeric features:
     for feature in ["lat", "long"]:
         # calculate mean
@@ -63,7 +62,6 @@ def load_data(filename: str):
         house_data[feature].replace(np.nan, feature_mean, inplace=True)
 
     # features of specific range:
-    # TODO does rounding ( round(x) ) helps ?
     # calculate reliable mean (without garbage values)
     feature_mean = house_data[house_data["waterfront"].isin([0, 1])]["waterfront"].mean()
     # replace garbage values with the calculated mean
@@ -106,14 +104,6 @@ def load_data(filename: str):
     response = processed_sample_matrix.price
     processed_sample_matrix.drop("price", axis=1, inplace=True)
 
-    # TODO should add intercept ?
-
-    # is there nan : print(house_data[house_data["waterfront"] == np.nan].empty)
-    # print( house_data.shape)
-    # print( house_data.count() )
-    # select columns :print(house_data[["condition", "view"]].describe())
-    # corr : print( house_data.corr()['price'].sort_values() )
-
     return processed_sample_matrix, response
 
 
@@ -136,22 +126,16 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
         Path to folder in which plots are saved
     """
 
-    # TODO what about intercept ?
-
-    # TODO uncomment:
-
-    # for feature in X:
-    #     corr = np.cov(X[feature], y)[0, 1] / (np.std(X[feature]) * np.std(y))
-    #     fig = px.scatter(pd.DataFrame({'x': X[feature], 'y': y}), x="x", y="y", trendline="ols",
-    #                      title=f"Correlation Between {feature} Values and Response <br>Pearson Correlation {corr}",
-    #                      labels={"x": f"{feature} Values", "y": "Response Values"})
-    #     fig.write_image(output_path + "/pearson.correlation.%s.png" % feature)
+    for feature in X:
+        corr = np.cov(X[feature], y)[0, 1] / (np.std(X[feature]) * np.std(y))
+        fig = px.scatter(pd.DataFrame({'x': X[feature], 'y': y}), x="x", y="y", trendline="ols",
+                         title=f"Correlation Between {feature} Values and Response <br>Pearson Correlation {corr}",
+                         labels={"x": f"{feature} Values", "y": "Response Values"})
+        fig.write_image(output_path + "/pearson.correlation.%s.png" % feature)
 
 def question_4():
 
     lr = LinearRegression(True)
-
-    # features_num = len(train_y)
 
     mse_list = []
     var_loss = []
@@ -173,7 +157,7 @@ def question_4():
         # 4) Store average and variance of loss over test set
         if len(p_loss_list) == 0: print("division by zero"), exit(1)  # no reason to happen but just to ensure.
         p_loss_avrg = sum(p_loss_list) / len(p_loss_list)
-        p_loss_var = np.array(p_loss_list).var()  # TODO to be tested
+        p_loss_var = np.array(p_loss_list).var()
         mse_list.append(p_loss_avrg)
         var_loss.append(p_loss_var)
 
@@ -217,13 +201,4 @@ if __name__ == '__main__':
     #   4) Store average and variance of loss over test set
     # Then plot average loss as function of training size with error ribbon of size (mean-2*std, mean+2*std)
 
-    #TODO uncomment:
-    # question_4()
-
-    x = np.array([1,2,3,4])
-    k = 4
-    # print(np.vander(x, k)[::-1])
-    # print(np.vander(x, k))
-    print(np.vander(x, k))
-    print(np.flip(np.vander(x, k), 1))
-    print(np.vander(x, k, increasing=True))
+    question_4()

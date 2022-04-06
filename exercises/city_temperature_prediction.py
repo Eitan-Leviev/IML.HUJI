@@ -101,16 +101,16 @@ if __name__ == '__main__':
     train_X, train_y, test_X, test_y = split_train_test(sample_matrix, response)
     # For every value k ∈ [1,10], fit a polynomial model of degree k using the training set
     loss_list = []
-    min_loss, min_ind = math.inf, 0
+    min_loss, min_k = math.inf, 0
     for k in range(1, 11):
         poly_model = PolynomialFitting(k)
         poly_model.fit(train_X["DayOfYear"], train_y)
         # Record the loss of the model over the test set, rounded to 2 decimal places
         loss = round(poly_model._loss(test_X["DayOfYear"], test_y), 2)
         loss_list.append(loss)
-        if loss < min_loss: min_loss, min_ind = loss, k # ensure the simplest model (min k)
+        if loss < min_loss: min_loss, min_k = loss, k # ensure the simplest model (min k)
         print(f"loss of {k}-polynomial model over the test set: {loss}")
-    print(f"the optimal degree is: {min_ind}, resulting in a loss of {min_loss}")
+    print(f"the optimal degree is: {min_k}, resulting in a loss of {min_loss}")
     #plot
     fig = go.Figure(data=[go.Bar(x=list(range(1, 11)),
                                  y=loss_list)])
@@ -122,5 +122,23 @@ if __name__ == '__main__':
 
     # Question 5 - Evaluating fitted model on different countries
 
-pass # debugging
+    train_X, train_y = israel_df.drop('Temp', axis=1), israel_df.Temp
+    poly_model = PolynomialFitting(min_k)
+    poly_model.fit(train_X["DayOfYear"], train_y)
+    loss_list = []
+
+    for country in df['Country'].unique():
+        if country != "Israel":
+            country_df = df[df['Country'] == country]
+            loss = poly_model._loss(country_df["DayOfYear"], country_df.Temp)
+            loss_list.append(loss)
+
+    fig = go.Figure(data=[go.Bar(x=df[df['Country'] != 'Israel']['Country'].unique(),
+                                 y=loss_list)])
+    fig.update_layout(
+        title=f"polynomial fitting errors of countries other than Israel"
+              f"with the optimal degree {min_k} chosen in Israel subset fitting",
+        xaxis_title="country",
+        yaxis_title="loss of Polynomial fitting of degree k in israel")
+    fig.write_image("../exercises/countries.loss.over.min_k.png")
 

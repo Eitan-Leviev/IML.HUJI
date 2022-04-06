@@ -55,10 +55,6 @@ class LinearRegression(BaseEstimator):
             X = np.c_[ np.ones( len(y) ), X]
 
         self.coefs_ = pinv(X) @ y
-        # self.coefs_ = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
-
-        # TODO what about include_intercept_ ?
-
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -98,7 +94,6 @@ class LinearRegression(BaseEstimator):
             Performance under MSE loss function
         """
 
-        # TODO ensure that no need for new fit : fit(X, y)
         # predict
         y_predict = self._predict(X)
         # calculate MSE

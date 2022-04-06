@@ -20,7 +20,6 @@ class PolynomialFitting(BaseEstimator):
             Degree of polynomial to fit
         """
         super().__init__()
-        # TODO disable intercept ?
         self.k_, self.lr_model_ = k, LinearRegression(False)
 
     def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
@@ -53,7 +52,6 @@ class PolynomialFitting(BaseEstimator):
             Predicted responses of given samples
         """
 
-        # TODO ensure
         return self.lr_model_.predict( self.__transform(X) )
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
@@ -93,6 +91,4 @@ class PolynomialFitting(BaseEstimator):
             Vandermonde matrix of given samples up to degree k
         """
 
-        # TODO ensure
         return np.vander(X, self.k_ + 1, increasing=True)
-        # return np.vander(X, self.k_ + 1)
