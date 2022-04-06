@@ -23,22 +23,21 @@ def load_data(filename: str):
     """
 
     # read file into dataframe
+    data = pd.read_csv(filename, parse_dates=True)
 
-    df = pd.read_csv(filename)
+    # value validation
+    data = data[data["Temp"] > -50]
+    data = data[data["Temp"] < 80]
+
+    # new features
+    data['DayOfYear'] = pd.to_datetime(data['Date']).dt.dayofyear
 
     # return values
-
-    processed_sample_matrix = df
+    processed_sample_matrix = data
     response = processed_sample_matrix.Temp
     processed_sample_matrix.drop("Temp", axis=1, inplace=True)
 
     # TODO should add intercept ?
-
-    # is there nan : print(house_data[house_data["waterfront"] == np.nan].empty)
-    # print( house_data.shape)
-    # print( house_data.count() )
-    # select columns :print(house_data[["condition", "view"]].describe())
-    # corr : print( house_data.corr()['price'].sort_values() )
 
     return processed_sample_matrix, response
 
@@ -51,13 +50,9 @@ if __name__ == '__main__':
     X, y = load_data("../datasets/City_Temperature.csv")
 
     # Question 2 - Exploring data for specific country
-    raise NotImplementedError()
 
     # Question 3 - Exploring differences between countries
-    raise NotImplementedError()
 
     # Question 4 - Fitting model for different values of `k`
-    raise NotImplementedError()
 
     # Question 5 - Evaluating fitted model on different countries
-    raise NotImplementedError()
