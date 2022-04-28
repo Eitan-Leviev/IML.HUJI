@@ -77,16 +77,16 @@ class Perceptron(BaseEstimator):
         if self.include_intercept_:
             X = np.c_[ np.ones( len(y) ), X]
 
-        w = np.zeros( X.shape[1] )
+        self.coefs_ = np.zeros( X.shape[1] )
         for _ in range(self.max_iter_):
             is_fixed = False
             for i in range(y.size):
-                if y[i] * np.dot(w, X[i]) < 0:
-                    w += y[i] * X[i]
+                if y[i] * np.dot(self.coefs_, X[i]) <= 0:
+                    self.coefs_ += y[i] * X[i] # improve coeff
                     is_fixed = True
+                    self.callback_(self, X[i], y[i])
+                    break
             if not is_fixed: break
-
-        self.coefs_ = w
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -103,10 +103,8 @@ class Perceptron(BaseEstimator):
             Predicted responses of given samples
         """
 
-        #TODO what about being on the hyperplane
-
         if self.include_intercept_:
-            X = np.c_[ np.ones( X.shape[1] ), X]
+            X = np.c_[ np.ones( X.shape[0] ), X]
 
         responses = []
 
