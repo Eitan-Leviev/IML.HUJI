@@ -37,4 +37,20 @@ def cross_validate(estimator: BaseEstimator, X: np.ndarray, y: np.ndarray,
     validation_score: float
         Average validation score over folds
     """
-    raise NotImplementedError()
+
+    train_errors, validation_errors = [], []
+    folds = list(range(cv))
+    for i in folds:
+        # fit model with small training
+        # predict for training
+        # predict for validation
+        # add small training score
+        # add validation score
+        pass
+
+    # calc the avrg small-training errors
+    avrg_training_error = np.array(train_errors).mean()
+    # calc the avrg validation errors
+    avrg_validation_error = np.array(validation_errors).mean()
+
+    return avrg_training_error, avrg_validation_error
