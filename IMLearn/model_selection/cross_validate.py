@@ -40,13 +40,27 @@ def cross_validate(estimator: BaseEstimator, X: np.ndarray, y: np.ndarray,
 
     train_errors, validation_errors = [], []
     folds = list(range(cv))
+    X_folds = np.array_split(X, cv)
+    y_folds = np.array_split(y, cv)
+
     for i in folds:
-        # fit model with small training
+        # split
+        small_training_X = np.concatenate(X_folds[:i] + X_folds[i+1:])
+        small_training_y = np.concatenate(y_folds[:i] + y_folds[i+1:])
+        validation_X = X_folds[i]
+        validation_y = y_folds[i]
+        # fit model with i'th small training
+        estimator.fit(small_training_X, small_training_y)
         # predict for training
+        training_pred = estimator.predict(small_training_X)
         # predict for validation
-        # add small training score
-        # add validation score
-        pass
+        validation_pred = estimator.predict(validation_X)
+        # add small-training score to list
+        training_score = scoring(small_training_y, training_pred)
+        train_errors.append(training_score)
+        # add validation score to list
+        validation_score = scoring(validation_y, validation_pred)
+        validation_errors.append(validation_score)
 
     # calc the avrg small-training errors
     avrg_training_error = np.array(train_errors).mean()
